@@ -7,9 +7,8 @@ import { getSupabaseClient } from '@/lib/supabase';
 import { 
   Users, BookOpen, PlayCircle, Award, 
   Settings, Layout, ArrowLeft, Loader2, 
-  Plus, Trash2, CheckCircle2, ShieldX, 
-  ChevronRight, Save, PlusCircle, FileText,
-  Eye, EyeOff
+  Trash2, PlusCircle, FileText,
+  Eye, EyeOff, Plus
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -72,7 +71,7 @@ export default function AdminDashboard({ params }: PageProps) {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
 
-  // Selection states for hierarchies
+  // Selection states
   const [selectedCourseId, setSelectedCourseId] = useState<string>('');
   const [selectedLectureId, setSelectedLectureId] = useState<string>('');
 
@@ -119,7 +118,6 @@ export default function AdminDashboard({ params }: PageProps) {
         if (token && (token.role === 'admin' || token.role === 'teacher')) {
           setProfile(token);
           setAuthorized(true);
-          // Initial Data Fetch
           fetchAdminData(token.institute_id);
         } else {
           setAuthorized(false);
@@ -190,7 +188,6 @@ export default function AdminDashboard({ params }: PageProps) {
       setQuizzes(qData || []);
 
       if (qData && qData.length > 0) {
-        // Fetch Questions for first quiz
         const { data: qnsData } = await db.from('quiz_questions').select('*').eq('quiz_id', qData[0].id).order('created_at', { ascending: true });
         setQuizQuestions(qnsData || []);
       } else {
@@ -201,7 +198,7 @@ export default function AdminDashboard({ params }: PageProps) {
     }
   };
 
-  // 2. Form Submissions
+  // Forms Submissions
   const handleAddCourse = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile || !newCourseTitle) return;
@@ -250,7 +247,7 @@ export default function AdminDashboard({ params }: PageProps) {
   };
 
   const handleDeleteCourse = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this course and all its lectures/quizzes?')) return;
+    if (!confirm('Are you sure you want to delete this course?')) return;
     try {
       const db = getSupabaseClient();
       const { error } = await db.from('courses').delete().eq('id', id);
@@ -406,21 +403,21 @@ export default function AdminDashboard({ params }: PageProps) {
 
   if (!isLoaded || loadingAuth) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
-        <Loader2 size={40} className="text-gradient-purple" style={{ animation: 'spin 1s linear infinite' }} />
-        <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>Verifying admin authorization...</p>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', background: 'var(--bg-base)' }}>
+        <Loader2 size={40} style={{ color: 'var(--color-orange)', animation: 'spin 1s linear infinite' }} />
+        <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 600 }}>Verifying admin authorization...</p>
       </div>
     );
   }
 
   if (!authorized) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-        <div className="glass" style={{ padding: '2.5rem', borderRadius: 'var(--radius-lg)', textAlign: 'center', maxWidth: '420px' }}>
-          <ShieldX size={48} style={{ color: 'var(--color-danger)', marginBottom: '1rem', display: 'inline-block' }} />
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Access Denied</h2>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
-            You do not have administrative permissions to view the panel of this institute.
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', background: 'var(--bg-base)' }}>
+        <div className="glass" style={{ padding: '2.5rem', borderRadius: 'var(--radius-lg)', border: '2px solid var(--color-black)', boxShadow: '0 8px 0 var(--color-black)', textAlign: 'center', maxWidth: '420px', background: '#ffffff' }}>
+          <Settings size={48} style={{ color: 'var(--color-danger)', marginBottom: '1.25rem', display: 'inline-block' }} />
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '0.5rem' }}>Access Denied</h2>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 550, marginBottom: '1.75rem' }}>
+            You do not have administrative permissions to view the panel of this academy.
           </p>
           <Link href={`/inst/${slug}/dashboard`} className="btn btn-primary">
             Back to Student Portal
@@ -431,174 +428,123 @@ export default function AdminDashboard({ params }: PageProps) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-base)' }}>
       
       {/* Navigation Header */}
       <header className="glass" style={{
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        padding: '1rem 2rem',
+        padding: '1.25rem 2rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderBottom: '1px solid var(--border-light)'
+        borderBottom: '2px solid var(--color-black)',
+        background: 'var(--bg-surface)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Link href={`/inst/${slug}/dashboard`} style={{
+          <Link href={`/inst/${slug}/dashboard`} className="btn btn-outline" style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             width: '32px',
             height: '32px',
-            borderRadius: 'var(--radius-md)',
-            background: 'var(--bg-surface-hover)',
-            border: '1px solid var(--border-light)'
+            padding: 0,
+            borderRadius: 'var(--radius-sm)'
           }}>
             <ArrowLeft size={14} />
           </Link>
-          <span style={{ fontSize: '1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Settings size={18} style={{ color: 'var(--color-primary)' }} />
+          <span style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--color-black)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Settings size={18} style={{ color: 'var(--color-orange)' }} />
             Admin Panel
           </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <span style={{ fontSize: '0.75rem', background: 'rgba(250,204,21,0.1)', color: 'var(--color-primary)', border: '1px solid rgba(250,204,21,0.2)', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-sm)' }}>
-            Institute Owner Space
+          <span className="badge badge-yellow" style={{ border: '2px solid var(--color-black)', padding: '0.2rem 0.5rem', fontSize: '0.7rem' }}>
+            Academy Owner Space
           </span>
-          <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{profile?.name}</div>
+          <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--color-black)' }}>{profile?.name}</div>
         </div>
       </header>
 
       {/* Main Panel Content */}
-      <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', flex: 1 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', flex: 1 }}>
         
         {/* Sidebar Nav */}
-        <aside className="glass" style={{ borderRight: '1px solid var(--border-light)', padding: '1.5rem 1rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <button
-              onClick={() => setActiveTab('overview')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                padding: '0.75rem 1rem',
-                borderRadius: 'var(--radius-md)',
-                border: 'none',
-                background: activeTab === 'overview' ? 'rgba(139, 92, 246, 0.15)' : 'transparent',
-                color: activeTab === 'overview' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-                cursor: 'pointer',
-                textAlign: 'left',
-                fontSize: '0.875rem',
-                fontWeight: activeTab === 'overview' ? 600 : 400
-              }}
-            >
-              <Layout size={16} />
-              Academy Overview
-            </button>
-            <button
-              onClick={() => setActiveTab('courses')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                padding: '0.75rem 1rem',
-                borderRadius: 'var(--radius-md)',
-                border: 'none',
-                background: activeTab === 'courses' ? 'rgba(139, 92, 246, 0.15)' : 'transparent',
-                color: activeTab === 'courses' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-                cursor: 'pointer',
-                textAlign: 'left',
-                fontSize: '0.875rem',
-                fontWeight: activeTab === 'courses' ? 600 : 400
-              }}
-            >
-              <BookOpen size={16} />
-              Manage Courses ({courses.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('lectures')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                padding: '0.75rem 1rem',
-                borderRadius: 'var(--radius-md)',
-                border: 'none',
-                background: activeTab === 'lectures' ? 'rgba(139, 92, 246, 0.15)' : 'transparent',
-                color: activeTab === 'lectures' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-                cursor: 'pointer',
-                textAlign: 'left',
-                fontSize: '0.875rem',
-                fontWeight: activeTab === 'lectures' ? 600 : 400
-              }}
-            >
-              <PlayCircle size={16} />
-              Course Syllabus
-            </button>
-            <button
-              onClick={() => setActiveTab('users')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                padding: '0.75rem 1rem',
-                borderRadius: 'var(--radius-md)',
-                border: 'none',
-                background: activeTab === 'users' ? 'rgba(139, 92, 246, 0.15)' : 'transparent',
-                color: activeTab === 'users' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-                cursor: 'pointer',
-                textAlign: 'left',
-                fontSize: '0.875rem',
-                fontWeight: activeTab === 'users' ? 600 : 400
-              }}
-            >
-              <Users size={16} />
-              Manage Users ({profiles.length})
-            </button>
+        <aside className="glass" style={{ borderRight: '2px solid var(--color-black)', padding: '2rem 1rem', background: '#ffffff' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {[
+              { id: 'overview', label: 'Academy Overview', icon: <Layout size={16} /> },
+              { id: 'courses', label: `Manage Courses (${courses.length})`, icon: <BookOpen size={16} /> },
+              { id: 'lectures', label: 'Course Syllabus', icon: <PlayCircle size={16} /> },
+              { id: 'users', label: `Manage Users (${profiles.length})`, icon: <Users size={16} /> },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  padding: '0.85rem 1rem',
+                  borderRadius: 'var(--radius-md)',
+                  border: activeTab === tab.id ? '2px solid var(--color-black)' : '2px solid transparent',
+                  background: activeTab === tab.id ? 'var(--color-yellow)' : 'transparent',
+                  color: 'var(--color-black)',
+                  boxShadow: activeTab === tab.id ? '2px 2px 0 var(--color-black)' : 'none',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  fontSize: '0.875rem',
+                  fontWeight: activeTab === tab.id ? 800 : 500,
+                  transition: 'var(--transition-fast)'
+                }}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
           </div>
         </aside>
 
         {/* Tab Body Panel */}
-        <main style={{ padding: '2.5rem', overflowY: 'auto', maxHeight: 'calc(100vh - 64px)' }}>
+        <main style={{ padding: '3rem 2.5rem', overflowY: 'auto', maxHeight: 'calc(100vh - 64px)' }}>
           
           {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
             <div>
-              <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem', fontFamily: 'var(--font-family-heading)' }}>
-                Welcome back to your dashboard!
+              <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '0.5rem', fontFamily: 'var(--font-family-heading)' }}>
+                Academy Management Board
               </h2>
-              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem', marginBottom: '2rem' }}>
-                Quick metrics for your educational institute
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 550, marginBottom: '2.5rem' }}>
+                Quick metrics for your educational portal
               </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
-                <div className="glass" style={{ padding: '1.5rem', borderRadius: 'var(--radius-md)' }}>
-                  <Users size={24} style={{ color: 'var(--color-primary)', marginBottom: '0.75rem' }} />
-                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Total Students</div>
-                  <div style={{ fontSize: '2rem', fontWeight: 800 }}>{profiles.filter(p => p.role === 'student').length}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '2rem', marginBottom: '4rem' }}>
+                <div className="glass" style={{ padding: '2rem', borderRadius: 'var(--radius-lg)', border: '2px solid var(--color-black)', boxShadow: '4px 4px 0 var(--color-black)', background: '#ffffff' }}>
+                  <Users size={26} style={{ color: 'var(--color-blue)', marginBottom: '1rem' }} />
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Total Students</div>
+                  <div style={{ fontSize: '2.25rem', fontWeight: 800, color: 'var(--color-black)', marginTop: '0.25rem' }}>{profiles.filter(p => p.role === 'student').length}</div>
                 </div>
-                <div className="glass" style={{ padding: '1.5rem', borderRadius: 'var(--radius-md)' }}>
-                  <BookOpen size={24} style={{ color: 'var(--color-secondary)', marginBottom: '0.75rem' }} />
-                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Courses Created</div>
-                  <div style={{ fontSize: '2rem', fontWeight: 800 }}>{courses.length}</div>
+                <div className="glass" style={{ padding: '2rem', borderRadius: 'var(--radius-lg)', border: '2px solid var(--color-black)', boxShadow: '4px 4px 0 var(--color-black)', background: '#ffffff' }}>
+                  <BookOpen size={26} style={{ color: 'var(--color-orange)', marginBottom: '1rem' }} />
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Courses Created</div>
+                  <div style={{ fontSize: '2.25rem', fontWeight: 800, color: 'var(--color-black)', marginTop: '0.25rem' }}>{courses.length}</div>
                 </div>
-                <div className="glass" style={{ padding: '1.5rem', borderRadius: 'var(--radius-md)' }}>
-                  <Users size={24} style={{ color: 'var(--color-success)', marginBottom: '0.75rem' }} />
-                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Faculty / Teachers</div>
-                  <div style={{ fontSize: '2rem', fontWeight: 800 }}>{profiles.filter(p => p.role === 'teacher' || p.role === 'admin').length}</div>
+                <div className="glass" style={{ padding: '2rem', borderRadius: 'var(--radius-lg)', border: '2px solid var(--color-black)', boxShadow: '4px 4px 0 var(--color-black)', background: '#ffffff' }}>
+                  <Users size={26} style={{ color: 'var(--color-yellow)', marginBottom: '1rem' }} />
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Faculty / Admins</div>
+                  <div style={{ fontSize: '2.25rem', fontWeight: 800, color: 'var(--color-black)', marginTop: '0.25rem' }}>{profiles.filter(p => p.role === 'teacher' || p.role === 'admin').length}</div>
                 </div>
               </div>
 
-              <div className="glass" style={{ padding: '2rem', borderRadius: 'var(--radius-lg)' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem' }}>Syllabus Coverage</h3>
-                <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem', lineHeight: 1.5, marginBottom: '1.5rem' }}>
-                  Manage and structure your curriculum. Add lectures, study notes, assignments, and test series quizzes inside the **Course Syllabus** tab. Let students prepare dynamically!
+              <div className="glass" style={{ padding: '2.5rem', borderRadius: 'var(--radius-lg)', border: '2px solid var(--color-black)', boxShadow: '0 8px 0 var(--color-black)', background: '#ffffff' }}>
+                <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '1rem' }}>Curriculum Builder</h3>
+                <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', fontWeight: 500, lineHeight: 1.6, marginBottom: '2rem' }}>
+                  Manage and structure your curriculum batches. Add video lectures, study sheets, assignments, and check interactive quiz test series.
                 </p>
                 <button onClick={() => setActiveTab('lectures')} className="btn btn-primary">
                   Go to Syllabus Builder
-                  <ChevronRight size={16} />
                 </button>
               </div>
             </div>
@@ -607,22 +553,24 @@ export default function AdminDashboard({ params }: PageProps) {
           {/* TAB 2: MANAGE COURSES */}
           {activeTab === 'courses' && (
             <div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: '2.5rem' }}>
                 
                 {/* Courses List */}
                 <div>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1.25rem' }}>Academy Course Catalog</h3>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '1.5rem' }}>Academy Course Catalog</h3>
                   
                   {courses.length === 0 ? (
-                    <div className="glass" style={{ padding: '3rem', textAlign: 'center', borderRadius: 'var(--radius-md)' }}>
-                      <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>No courses added yet. Fill the registration form to create one.</p>
+                    <div className="glass" style={{ padding: '3rem 2rem', textAlign: 'center', borderRadius: 'var(--radius-md)', border: '2px solid var(--color-black)', background: '#ffffff' }}>
+                      <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 500 }}>No courses added yet. Fill the registration form to create one.</p>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                       {courses.map(course => (
                         <div key={course.id} className="glass" style={{
                           padding: '1.25rem',
                           borderRadius: 'var(--radius-md)',
+                          border: '2px solid var(--color-black)',
+                          background: '#ffffff',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
@@ -630,36 +578,36 @@ export default function AdminDashboard({ params }: PageProps) {
                         }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                             <div style={{
-                              width: '90px',
-                              height: '56px',
+                              width: '95px',
+                              height: '60px',
                               borderRadius: 'var(--radius-sm)',
                               background: course.thumbnail_url 
                                 ? `url(${course.thumbnail_url}) center/cover no-repeat` 
-                                : 'linear-gradient(135deg, #1e1b4b 0%, #311042 100%)',
-                              border: '1px solid var(--border-light)'
+                                : 'linear-gradient(135deg, #ffd6b3 0%, #ffebcc 100%)',
+                              border: '2px solid var(--color-black)'
                             }} />
                             <div>
-                              <h4 style={{ fontSize: '1rem', fontWeight: 700 }}>{course.title}</h4>
-                              <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                              <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-black)' }}>{course.title}</h4>
+                              <p style={{ fontSize: '0.825rem', color: 'var(--color-text-secondary)', fontWeight: 500, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                                 {course.description || 'No description provided.'}
                               </p>
                             </div>
                           </div>
 
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                             <button
                               onClick={() => togglePublishCourse(course)}
                               className={`btn ${course.is_published ? 'btn-outline' : 'btn-primary'}`}
-                              style={{ padding: '0.4rem 0.75rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                              style={{ padding: '0.45rem 0.85rem', fontSize: '0.75rem', gap: '0.35rem' }}
                             >
-                              {course.is_published ? <EyeOff size={12} /> : <Eye size={12} />}
+                              {course.is_published ? <EyeOff size={13} /> : <Eye size={13} />}
                               {course.is_published ? 'Unpublish' : 'Publish'}
                             </button>
                             
                             <button
                               onClick={() => handleDeleteCourse(course.id)}
                               className="btn btn-outline"
-                              style={{ padding: '0.4rem', border: '1px solid rgba(239,68,68,0.2)', color: 'var(--color-danger)' }}
+                              style={{ padding: '0.5rem', color: 'var(--color-danger)' }}
                             >
                               <Trash2 size={14} />
                             </button>
@@ -671,9 +619,9 @@ export default function AdminDashboard({ params }: PageProps) {
                 </div>
 
                 {/* Course Form */}
-                <div className="glass" style={{ padding: '2rem', borderRadius: 'var(--radius-lg)', height: 'fit-content' }}>
-                  <h4 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <PlusCircle size={18} style={{ color: 'var(--color-primary)' }} />
+                <div className="glass" style={{ padding: '2rem', borderRadius: 'var(--radius-lg)', border: '2px solid var(--color-black)', boxShadow: '4px 4px 0 var(--color-black)', background: '#ffffff', height: 'fit-content' }}>
+                  <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <PlusCircle size={18} style={{ color: 'var(--color-orange)' }} />
                     Add New Course
                   </h4>
                   <form onSubmit={handleAddCourse}>
@@ -682,7 +630,7 @@ export default function AdminDashboard({ params }: PageProps) {
                       <input
                         type="text"
                         required
-                        placeholder="e.g. Class 11 Physics Full Batch"
+                        placeholder="e.g. Class 11 Physics Batch"
                         className="form-input"
                         value={newCourseTitle}
                         onChange={(e) => setNewCourseTitle(e.target.value)}
@@ -723,8 +671,8 @@ export default function AdminDashboard({ params }: PageProps) {
           {activeTab === 'lectures' && (
             <div>
               {/* Select Course dropdown */}
-              <div className="glass" style={{ padding: '1.25rem 2rem', borderRadius: 'var(--radius-md)', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>Select Course:</span>
+              <div className="glass" style={{ padding: '1.25rem 2rem', borderRadius: 'var(--radius-md)', border: '2px solid var(--color-black)', marginBottom: '2.5rem', background: '#ffffff', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--color-black)' }}>Select Course:</span>
                 <select
                   value={selectedCourseId}
                   onChange={(e) => {
@@ -740,18 +688,18 @@ export default function AdminDashboard({ params }: PageProps) {
               </div>
 
               {selectedCourseId ? (
-                <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '2rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '2.5rem' }}>
                   
                   {/* Lectures List Column */}
                   <div>
-                    <h4 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '1rem' }}>Course Lectures</h4>
+                    <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '1.25rem' }}>Course Lectures</h4>
                     
                     {lectures.length === 0 ? (
-                      <div className="glass" style={{ padding: '2rem 1rem', textAlign: 'center', borderRadius: 'var(--radius-md)' }}>
-                        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>No lectures added yet.</p>
+                      <div className="glass" style={{ padding: '2.5rem 1rem', textAlign: 'center', borderRadius: 'var(--radius-md)', border: '2px solid var(--color-black)', background: '#ffffff' }}>
+                        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', fontWeight: 550 }}>No lectures added yet.</p>
                       </div>
                     ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                         {lectures.map((lecture, idx) => (
                           <button
                             key={lecture.id}
@@ -760,21 +708,22 @@ export default function AdminDashboard({ params }: PageProps) {
                               fetchLectureDetails(lecture.id);
                             }}
                             style={{
-                              padding: '0.75rem 1rem',
+                              padding: '0.85rem 1rem',
                               borderRadius: 'var(--radius-md)',
-                              background: selectedLectureId === lecture.id ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.01)',
-                              border: '1px solid',
-                              borderColor: selectedLectureId === lecture.id ? 'var(--color-secondary)' : 'var(--border-light)',
-                              color: selectedLectureId === lecture.id ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
+                              background: selectedLectureId === lecture.id ? 'var(--color-yellow)' : '#ffffff',
+                              border: '2px solid var(--color-black)',
+                              color: 'var(--color-black)',
+                              boxShadow: selectedLectureId === lecture.id ? '2px 2px 0 var(--color-black)' : 'none',
                               textAlign: 'left',
                               cursor: 'pointer',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'space-between',
-                              width: '100%'
+                              width: '100%',
+                              transition: 'var(--transition-fast)'
                             }}
                           >
-                            <span style={{ fontSize: '0.85rem', fontWeight: selectedLectureId === lecture.id ? 600 : 400, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginRight: '0.5rem' }}>
+                            <span style={{ fontSize: '0.85rem', fontWeight: 800, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginRight: '0.5rem' }}>
                               {idx + 1}. {lecture.title}
                             </span>
                             <button
@@ -784,7 +733,7 @@ export default function AdminDashboard({ params }: PageProps) {
                               }}
                               style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-danger)', opacity: 0.8 }}
                             >
-                              <Trash2 size={12} />
+                              <Trash2 size={13} />
                             </button>
                           </button>
                         ))}
@@ -792,31 +741,31 @@ export default function AdminDashboard({ params }: PageProps) {
                     )}
 
                     {/* Add Lecture Form */}
-                    <div className="glass" style={{ padding: '1.25rem', borderRadius: 'var(--radius-md)', marginTop: '1.5rem' }}>
-                      <h5 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.75rem' }}>Add Lecture</h5>
+                    <div className="glass" style={{ padding: '1.5rem', borderRadius: 'var(--radius-md)', border: '2px solid var(--color-black)', marginTop: '2rem', background: '#ffffff' }}>
+                      <h5 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '1rem' }}>Add Lecture</h5>
                       <form onSubmit={handleAddLecture}>
-                        <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                        <div className="form-group" style={{ marginBottom: '0.85rem' }}>
                           <input
                             type="text"
                             required
                             placeholder="Lecture Title"
                             className="form-input"
-                            style={{ padding: '0.5rem 0.75rem', fontSize: '0.85rem' }}
+                            style={{ padding: '0.6rem 0.85rem', fontSize: '0.85rem' }}
                             value={newLectureTitle}
                             onChange={(e) => setNewLectureTitle(e.target.value)}
                           />
                         </div>
-                        <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                        <div className="form-group" style={{ marginBottom: '1rem' }}>
                           <input
                             type="text"
                             placeholder="Video Link (YouTube/MP4)"
                             className="form-input"
-                            style={{ padding: '0.5rem 0.75rem', fontSize: '0.85rem' }}
+                            style={{ padding: '0.6rem 0.85rem', fontSize: '0.85rem' }}
                             value={newLectureVideo}
                             onChange={(e) => setNewLectureVideo(e.target.value)}
                           />
                         </div>
-                        <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.4rem', fontSize: '0.8rem' }} disabled={lectureActionLoading}>
+                        <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.5rem', fontSize: '0.8rem' }} disabled={lectureActionLoading}>
                           {lectureActionLoading ? 'Saving...' : 'Add Lecture'}
                         </button>
                       </form>
@@ -826,21 +775,21 @@ export default function AdminDashboard({ params }: PageProps) {
                   {/* Lecture Details Column: Resources & Quizzes */}
                   <div>
                     {selectedLectureId ? (
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2.5rem' }}>
                         
                         {/* Resources Box */}
                         <div>
-                          <h4 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <FileText size={18} style={{ color: 'var(--color-secondary)' }} />
+                          <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <FileText size={18} style={{ color: 'var(--color-orange)' }} />
                             Lecture Materials
                           </h4>
 
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '2rem' }}>
                             {resources.length === 0 ? (
-                              <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>No download materials attached.</p>
+                              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', fontWeight: 500 }}>No materials attached yet.</p>
                             ) : (
                               resources.map(res => (
-                                <div key={res.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0.75rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', fontSize: '0.8rem' }}>
+                                <div key={res.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.85rem', background: '#ffffff', border: '2px solid var(--color-black)', borderRadius: 'var(--radius-sm)', fontSize: '0.8rem', fontWeight: 700 }}>
                                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>{res.title}</span>
                                   <button
                                     onClick={async () => {
@@ -850,61 +799,60 @@ export default function AdminDashboard({ params }: PageProps) {
                                     }}
                                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-danger)' }}
                                   >
-                                    <Trash2 size={12} />
+                                    <Trash2 size={13} />
                                   </button>
                                 </div>
                               ))
                             )}
                           </div>
 
-                          <form onSubmit={handleAddResource} className="glass" style={{ padding: '1rem', borderRadius: 'var(--radius-md)' }}>
-                            <h5 style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.5rem' }}>Attach File</h5>
-                            <div className="form-group" style={{ marginBottom: '0.5rem' }}>
+                          <form onSubmit={handleAddResource} className="glass" style={{ padding: '1.5rem', borderRadius: 'var(--radius-md)', border: '2px solid var(--color-black)', background: '#ffffff' }}>
+                            <h5 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '0.85rem' }}>Attach File</h5>
+                            <div className="form-group" style={{ marginBottom: '0.6rem' }}>
                               <input
                                 type="text"
                                 required
-                                placeholder="File Name (e.g. Physics Ch-1 Notes)"
+                                placeholder="File Title (e.g. Lecture Notes)"
                                 className="form-input"
-                                style={{ padding: '0.4rem', fontSize: '0.8rem' }}
+                                style={{ padding: '0.5rem', fontSize: '0.8rem' }}
                                 value={newResourceTitle}
                                 onChange={(e) => setNewResourceTitle(e.target.value)}
                               />
                             </div>
-                            <div className="form-group" style={{ marginBottom: '0.5rem' }}>
+                            <div className="form-group" style={{ marginBottom: '1rem' }}>
                               <input
                                 type="text"
                                 required
                                 placeholder="File Download URL"
                                 className="form-input"
-                                style={{ padding: '0.4rem', fontSize: '0.8rem' }}
+                                style={{ padding: '0.5rem', fontSize: '0.8rem' }}
                                 value={newResourceUrl}
                                 onChange={(e) => setNewResourceUrl(e.target.value)}
                               />
                             </div>
-                            <button type="submit" className="btn btn-secondary" style={{ width: '100%', padding: '0.4rem', fontSize: '0.75rem' }} disabled={resourceActionLoading}>
-                              {resourceActionLoading ? 'Attaching...' : 'Add Material'}
+                            <button type="submit" className="btn btn-secondary" style={{ width: '100%', padding: '0.5rem', fontSize: '0.75rem' }} disabled={resourceActionLoading}>
+                              {resourceActionLoading ? 'Attaching...' : 'Attach Notes'}
                             </button>
                           </form>
                         </div>
 
                         {/* Quiz Builder Box */}
                         <div>
-                          <h4 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <Award size={18} style={{ color: 'var(--color-primary)' }} />
+                          <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Award size={18} style={{ color: 'var(--color-blue)' }} />
                             Class Quiz Builder
                           </h4>
 
                           {quizzes.length === 0 ? (
-                            /* Add Quiz Form */
-                            <form onSubmit={handleAddQuiz} className="glass" style={{ padding: '1.5rem', borderRadius: 'var(--radius-md)' }}>
-                              <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem', marginBottom: '1rem' }}>
-                                Build an interactive test series check for this lecture session.
+                            <form onSubmit={handleAddQuiz} className="glass" style={{ padding: '1.5rem', borderRadius: 'var(--radius-md)', border: '2px solid var(--color-black)', background: '#ffffff' }}>
+                              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', fontWeight: 550, marginBottom: '1.25rem', lineHeight: 1.4 }}>
+                                Create an interactive quiz checkpoint for this lecture.
                               </p>
-                              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                              <div className="form-group" style={{ marginBottom: '1rem' }}>
                                 <input
                                   type="text"
                                   required
-                                  placeholder="Quiz Title (e.g. Checkpoint 1.1)"
+                                  placeholder="Quiz Title (e.g. Checkpoint 1)"
                                   className="form-input"
                                   value={newQuizTitle}
                                   onChange={(e) => setNewQuizTitle(e.target.value)}
@@ -915,10 +863,9 @@ export default function AdminDashboard({ params }: PageProps) {
                               </button>
                             </form>
                           ) : (
-                            /* Quiz Questions List & Form */
                             <div>
-                              <div style={{ display: 'flex', justifySelf: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                                <span className="badge badge-purple" style={{ fontSize: '0.75rem' }}>{quizzes[0].title}</span>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                                <span className="badge badge-yellow" style={{ fontSize: '0.75rem', border: '2px solid var(--color-black)' }}>{quizzes[0].title}</span>
                                 <button
                                   onClick={async () => {
                                     if (!confirm('Delete this quiz?')) return;
@@ -927,7 +874,7 @@ export default function AdminDashboard({ params }: PageProps) {
                                     setQuizzes([]);
                                     setQuizQuestions([]);
                                   }}
-                                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-danger)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.2rem' }}
+                                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-danger)', fontSize: '0.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.2rem' }}
                                 >
                                   <Trash2 size={12} />
                                   Delete
@@ -937,10 +884,10 @@ export default function AdminDashboard({ params }: PageProps) {
                               {/* Question List */}
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem', maxHeight: '180px', overflowY: 'auto' }}>
                                 {quizQuestions.length === 0 ? (
-                                  <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>No questions built yet.</p>
+                                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', fontWeight: 550 }}>No questions built yet.</p>
                                 ) : (
                                   quizQuestions.map((q, idx) => (
-                                    <div key={q.id} style={{ display: 'flex', alignItems: 'center', justifySelf: 'space-between', padding: '0.4rem 0.6rem', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem' }}>
+                                    <div key={q.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0.75rem', background: '#ffffff', border: '2px solid var(--color-black)', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem', fontWeight: 700 }}>
                                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>{idx + 1}. {q.question_text}</span>
                                       <button
                                         onClick={async () => {
@@ -958,20 +905,20 @@ export default function AdminDashboard({ params }: PageProps) {
                               </div>
 
                               {/* Add Question Form */}
-                              <form onSubmit={handleAddQuestion} className="glass" style={{ padding: '1rem', borderRadius: 'var(--radius-md)' }}>
-                                <h5 style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: '0.5rem' }}>Add MCQ Question</h5>
-                                <div className="form-group" style={{ marginBottom: '0.5rem' }}>
+                              <form onSubmit={handleAddQuestion} className="glass" style={{ padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '2px solid var(--color-black)', background: '#ffffff' }}>
+                                <h5 style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '0.75rem' }}>Add MCQ Question</h5>
+                                <div className="form-group" style={{ marginBottom: '0.6rem' }}>
                                   <input
                                     type="text"
                                     required
                                     placeholder="Question Text"
                                     className="form-input"
-                                    style={{ padding: '0.35rem', fontSize: '0.75rem' }}
+                                    style={{ padding: '0.45rem', fontSize: '0.75rem' }}
                                     value={newQText}
                                     onChange={(e) => setNewQText(e.target.value)}
                                   />
                                 </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.5rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.6rem' }}>
                                   {newQOpts.map((opt, optIdx) => (
                                     <input
                                       key={optIdx}
@@ -979,7 +926,7 @@ export default function AdminDashboard({ params }: PageProps) {
                                       required
                                       placeholder={`Option ${String.fromCharCode(65 + optIdx)}`}
                                       className="form-input"
-                                      style={{ padding: '0.35rem', fontSize: '0.75rem' }}
+                                      style={{ padding: '0.45rem', fontSize: '0.75rem' }}
                                       value={opt}
                                       onChange={(e) => {
                                         const copy = [...newQOpts];
@@ -989,13 +936,13 @@ export default function AdminDashboard({ params }: PageProps) {
                                     />
                                   ))}
                                 </div>
-                                <div className="form-group" style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                  <label style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>Correct Option:</label>
+                                <div className="form-group" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                  <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-secondary)' }}>Correct Answer:</label>
                                   <select
                                     value={newQCorrect}
                                     onChange={(e) => setNewQCorrect(parseInt(e.target.value))}
                                     className="form-input"
-                                    style={{ padding: '0.2rem', fontSize: '0.7rem', width: '60px' }}
+                                    style={{ padding: '0.25rem', fontSize: '0.75rem', width: '60px' }}
                                   >
                                     <option value={0}>A</option>
                                     <option value={1}>B</option>
@@ -1003,7 +950,7 @@ export default function AdminDashboard({ params }: PageProps) {
                                     <option value={3}>D</option>
                                   </select>
                                 </div>
-                                <button type="submit" className="btn btn-secondary" style={{ width: '100%', padding: '0.4rem', fontSize: '0.75rem' }} disabled={questionActionLoading}>
+                                <button type="submit" className="btn btn-secondary" style={{ width: '100%', padding: '0.45rem', fontSize: '0.75rem' }} disabled={questionActionLoading}>
                                   {questionActionLoading ? 'Saving...' : 'Save Question'}
                                 </button>
                               </form>
@@ -1013,16 +960,16 @@ export default function AdminDashboard({ params }: PageProps) {
 
                       </div>
                     ) : (
-                      <div className="glass" style={{ padding: '3rem', textAlign: 'center', borderRadius: 'var(--radius-md)' }}>
-                        <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>Select a lecture from the left sidebar to edit resource sheets and tests.</p>
+                      <div className="glass" style={{ padding: '3rem', textAlign: 'center', borderRadius: 'var(--radius-md)', border: '2px solid var(--color-black)', background: '#ffffff' }}>
+                        <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 550 }}>Select a lecture from the left sidebar to configure materials and quiz checkpoints.</p>
                       </div>
                     )}
                   </div>
 
                 </div>
               ) : (
-                <div className="glass" style={{ padding: '3rem', textAlign: 'center', borderRadius: 'var(--radius-md)' }}>
-                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>Please select a course to build its dynamic syllabus.</p>
+                <div className="glass" style={{ padding: '3rem', textAlign: 'center', borderRadius: 'var(--radius-md)', border: '2px solid var(--color-black)', background: '#ffffff' }}>
+                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 550 }}>Please select a course to build its syllabus structure.</p>
                 </div>
               )}
             </div>
@@ -1031,42 +978,42 @@ export default function AdminDashboard({ params }: PageProps) {
           {/* TAB 4: MANAGE USERS */}
           {activeTab === 'users' && (
             <div>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1.25rem' }}>Educational Institute Directory</h3>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '1.5rem' }}>Academy Member Directory</h3>
               
-              <div className="glass" style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
+              <div className="glass" style={{ borderRadius: 'var(--radius-lg)', border: '2px solid var(--color-black)', overflow: 'hidden', background: '#ffffff' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead>
-                    <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--border-light)' }}>
-                      <th style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: 600 }}>Name</th>
-                      <th style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: 600 }}>Email Address</th>
-                      <th style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: 600 }}>Status Role</th>
-                      <th style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: 600 }}>Modify permissions</th>
+                    <tr style={{ background: 'var(--bg-base)', borderBottom: '2px solid var(--color-black)' }}>
+                      <th style={{ padding: '1.25rem 1rem', fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--color-black)' }}>Name</th>
+                      <th style={{ padding: '1.25rem 1rem', fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--color-black)' }}>Email Address</th>
+                      <th style={{ padding: '1.25rem 1rem', fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--color-black)' }}>Access Role</th>
+                      <th style={{ padding: '1.25rem 1rem', fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--color-black)' }}>Permissions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {profiles.map(p => (
-                      <tr key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', fontSize: '0.875rem' }}>
-                        <td style={{ padding: '1rem', fontWeight: 500 }}>{p.name}</td>
-                        <td style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>{p.email}</td>
-                        <td style={{ padding: '1rem' }}>
-                          <span className={`badge ${p.role === 'admin' ? 'badge-gold' : p.role === 'teacher' ? 'badge-purple' : 'badge-outline'}`} style={{ textTransform: 'capitalize' }}>
+                      <tr key={p.id} style={{ borderBottom: '1px solid var(--border-light)', fontSize: '0.9rem', fontWeight: 650 }}>
+                        <td style={{ padding: '1.25rem 1rem', color: 'var(--color-black)' }}>{p.name}</td>
+                        <td style={{ padding: '1.25rem 1rem', color: 'var(--color-text-secondary)' }}>{p.email}</td>
+                        <td style={{ padding: '1.25rem 1rem' }}>
+                          <span className={`badge ${p.role === 'admin' ? 'badge-yellow' : p.role === 'teacher' ? 'badge-orange' : 'badge-outline'}`} style={{ border: '2px solid var(--color-black)' }}>
                             {p.role}
                           </span>
                         </td>
-                        <td style={{ padding: '1rem' }}>
+                        <td style={{ padding: '1.25rem 1rem' }}>
                           {profile?.id !== p.id ? (
                             <select
                               value={p.role}
                               onChange={(e) => handleChangeRole(p.id, e.target.value as any)}
                               className="form-input"
-                              style={{ padding: '0.25rem', fontSize: '0.75rem', width: '110px' }}
+                              style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem', width: '120px' }}
                             >
                               <option value="student">Student</option>
                               <option value="teacher">Teacher</option>
                               <option value="admin">Admin</option>
                             </select>
                           ) : (
-                            <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Self (No change)</span>
+                            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', fontWeight: 550 }}>Self (No change)</span>
                           )}
                         </td>
                       </tr>

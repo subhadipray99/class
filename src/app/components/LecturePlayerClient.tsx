@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { 
-  Play, FileText, CheckCircle, HelpCircle, 
-  Download, ArrowRight, ArrowLeft, RefreshCw,
+  Play, FileText, HelpCircle, 
+  Download, RefreshCw,
   Award, Check, X, FileBadge
 } from 'lucide-react';
 
@@ -62,7 +62,6 @@ export default function LecturePlayerClient({
   const [quizScore, setQuizScore] = useState(0);
   const [reviewMode, setReviewMode] = useState(false);
 
-  // Helper to parse YouTube URLs to embed URL
   const getEmbedUrl = (url: string) => {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -70,7 +69,7 @@ export default function LecturePlayerClient({
     if (match && match[2].length === 11) {
       return `https://www.youtube.com/embed/${match[2]}?autoplay=1&rel=0`;
     }
-    return url; // Return direct source if not YouTube
+    return url;
   };
 
   const videoUrl = getEmbedUrl(lecture.video_url || '');
@@ -116,7 +115,7 @@ export default function LecturePlayerClient({
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem', flex: 1, padding: '2rem' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 370px', gap: '2.5rem', flex: 1, padding: '2.5rem', background: 'var(--bg-base)' }}>
       
       {/* Left Column: Player & Lecture info */}
       <div>
@@ -126,9 +125,9 @@ export default function LecturePlayerClient({
           paddingTop: '56.25%', /* 16:9 Aspect Ratio */
           borderRadius: 'var(--radius-lg)',
           overflow: 'hidden',
-          border: '1px solid var(--border-light)',
+          border: '2px solid var(--color-black)',
           background: '#000',
-          boxShadow: 'var(--shadow-neon)'
+          boxShadow: '4px 4px 0 var(--color-black)'
         }}>
           {videoUrl ? (
             isYouTube ? (
@@ -175,17 +174,17 @@ export default function LecturePlayerClient({
               color: 'var(--color-text-muted)'
             }}>
               <HelpCircle size={48} />
-              <p>No video lecture uploaded for this session.</p>
+              <p style={{ fontWeight: 600 }}>No video lecture uploaded for this session.</p>
             </div>
           )}
         </div>
 
         {/* Lecture Meta */}
-        <div style={{ marginTop: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem', fontFamily: 'var(--font-family-heading)' }}>
+        <div style={{ marginTop: '2rem' }}>
+          <h2 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '0.75rem', fontFamily: 'var(--font-family-heading)' }}>
             {lecture.title}
           </h2>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.975rem', fontWeight: 500, lineHeight: 1.6 }}>
             {lecture.description || 'Watch the lecture video and use the sidebar tabs to download study files or solve attached quizzes.'}
           </p>
         </div>
@@ -194,59 +193,65 @@ export default function LecturePlayerClient({
       {/* Right Column: Dynamic Tabs (Resources & Quiz) */}
       <div className="glass" style={{
         borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--border-light)',
+        border: '2px solid var(--color-black)',
+        boxShadow: '4px 4px 0 var(--color-black)',
         display: 'flex',
         flexDirection: 'column',
         height: 'fit-content',
         maxHeight: 'calc(100vh - 120px)',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        background: '#ffffff'
       }}>
         {/* Tab Headers */}
         <div style={{
           display: 'flex',
-          borderBottom: '1px solid var(--border-light)',
-          background: 'rgba(255,255,255,0.01)'
+          borderBottom: '2px solid var(--color-black)',
+          background: 'var(--bg-base)'
         }}>
           <button
             onClick={() => setActiveTab('resources')}
             style={{
               flex: 1,
-              padding: '1rem',
+              padding: '1.25rem 1rem',
               border: 'none',
               background: 'transparent',
-              color: activeTab === 'resources' ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-              borderBottom: activeTab === 'resources' ? '2px solid var(--color-primary)' : 'none',
+              color: activeTab === 'resources' ? 'var(--color-orange)' : 'var(--color-text-secondary)',
+              borderBottom: activeTab === 'resources' ? '3px solid var(--color-orange)' : 'none',
               cursor: 'pointer',
-              fontWeight: 600,
-              fontSize: '0.875rem',
+              fontWeight: 800,
+              fontSize: '0.85rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.02em',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '0.5rem'
             }}
           >
-            <FileText size={16} />
-            Study Notes ({resources.length})
+            <FileText size={15} />
+            Materials
           </button>
           <button
             onClick={() => setActiveTab('quiz')}
             style={{
               flex: 1,
-              padding: '1rem',
+              padding: '1.25rem 1rem',
               border: 'none',
               background: 'transparent',
-              color: activeTab === 'quiz' ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-              borderBottom: activeTab === 'quiz' ? '2px solid var(--color-primary)' : 'none',
+              color: activeTab === 'quiz' ? 'var(--color-orange)' : 'var(--color-text-secondary)',
+              borderBottom: activeTab === 'quiz' ? '3px solid var(--color-orange)' : 'none',
               cursor: 'pointer',
-              fontWeight: 600,
-              fontSize: '0.875rem',
+              fontWeight: 800,
+              fontSize: '0.85rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.02em',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '0.5rem'
             }}
           >
-            <Award size={16} />
+            <Award size={15} />
             Quiz Series
           </button>
         </div>
@@ -258,9 +263,9 @@ export default function LecturePlayerClient({
           {activeTab === 'resources' && (
             <div>
               {resources.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--color-text-muted)' }}>
-                  <FileBadge size={32} style={{ marginBottom: '0.5rem', display: 'inline-block' }} />
-                  <p style={{ fontSize: '0.875rem' }}>No resource files attached to this session.</p>
+                <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--color-text-muted)' }}>
+                  <FileBadge size={32} style={{ marginBottom: '0.75rem', display: 'inline-block' }} />
+                  <p style={{ fontSize: '0.85rem', fontWeight: 600 }}>No study files attached to this session.</p>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -274,6 +279,8 @@ export default function LecturePlayerClient({
                       style={{
                         padding: '1rem',
                         borderRadius: 'var(--radius-md)',
+                        border: '2px solid var(--color-black)',
+                        background: '#ffffff',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
@@ -281,18 +288,19 @@ export default function LecturePlayerClient({
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', overflow: 'hidden' }}>
-                        <FileText size={18} style={{ color: 'var(--color-secondary)', flexShrink: 0 }} />
-                        <span style={{ fontSize: '0.85rem', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <FileText size={18} style={{ color: 'var(--color-orange)', flexShrink: 0 }} />
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-black)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {res.title}
                         </span>
                       </div>
                       <div style={{
-                        padding: '0.4rem',
+                        padding: '0.45rem',
                         borderRadius: 'var(--radius-sm)',
-                        background: 'rgba(255,255,255,0.05)',
-                        color: 'var(--color-text-primary)'
+                        background: 'var(--bg-base)',
+                        border: '2px solid var(--color-black)',
+                        color: 'var(--color-black)'
                       }}>
-                        <Download size={14} />
+                        <Download size={12} />
                       </div>
                     </a>
                   ))}
@@ -300,29 +308,29 @@ export default function LecturePlayerClient({
               )}
 
               {/* Sidebar Lecture Switcher */}
-              <div style={{ marginTop: '2rem', borderTop: '1px solid var(--border-light)', paddingTop: '1.5rem' }}>
-                <h4 style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginBottom: '1rem', fontWeight: 600 }}>
+              <div style={{ marginTop: '2.5rem', borderTop: '2px solid var(--color-black)', paddingTop: '2rem' }}>
+                <h4 style={{ fontSize: '0.85rem', color: 'var(--color-black)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1.25rem', fontWeight: 800 }}>
                   Course Schedule
                 </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                   {otherLectures.map((l, idx) => (
                     <Link
                       key={l.id}
                       href={`/inst/${slug}/courses/${courseId}/lectures/${l.id}`}
                       style={{
-                        padding: '0.75rem 1rem',
+                        padding: '0.85rem 1rem',
                         borderRadius: 'var(--radius-md)',
                         fontSize: '0.85rem',
-                        background: l.id === lecture.id ? 'rgba(139, 92, 246, 0.15)' : 'transparent',
-                        border: l.id === lecture.id ? '1px solid rgba(139, 92, 246, 0.2)' : '1px solid transparent',
-                        color: l.id === lecture.id ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
+                        background: l.id === lecture.id ? 'var(--color-yellow)' : 'transparent',
+                        border: l.id === lecture.id ? '2px solid var(--color-black)' : '1px solid transparent',
+                        color: 'var(--color-black)',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.5rem'
                       }}
                     >
-                      <Play size={10} style={{ fill: l.id === lecture.id ? 'var(--color-primary)' : 'none' }} />
-                      <span style={{ fontWeight: l.id === lecture.id ? 600 : 400 }}>{idx + 1}. {l.title}</span>
+                      <Play size={10} style={{ fill: l.id === lecture.id ? 'var(--color-black)' : 'none', color: 'var(--color-black)' }} />
+                      <span style={{ fontWeight: l.id === lecture.id ? 800 : 500 }}>{idx + 1}. {l.title}</span>
                     </Link>
                   ))}
                 </div>
@@ -334,24 +342,24 @@ export default function LecturePlayerClient({
           {activeTab === 'quiz' && (
             <div>
               {quizzes.length === 0 || questions.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--color-text-muted)' }}>
-                  <HelpCircle size={32} style={{ marginBottom: '0.5rem', display: 'inline-block' }} />
-                  <p style={{ fontSize: '0.875rem' }}>No quizzes attached to this lecture.</p>
+                <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--color-text-muted)' }}>
+                  <HelpCircle size={32} style={{ marginBottom: '0.75rem', display: 'inline-block' }} />
+                  <p style={{ fontSize: '0.85rem', fontWeight: 600 }}>No quizzes attached to this lecture.</p>
                 </div>
               ) : !quizSubmitted ? (
                 /* Quiz Taking Mode */
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                    <span className="badge badge-purple" style={{ fontSize: '0.7rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                    <span className="badge badge-outline" style={{ fontSize: '0.7rem', border: '2px solid var(--color-black)' }}>
                       Question {currentQuestionIdx + 1} of {questions.length}
                     </span>
                   </div>
 
-                  <h4 style={{ fontSize: '1rem', fontWeight: 600, lineHeight: 1.4, marginBottom: '1.25rem' }}>
+                  <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-black)', lineHeight: 1.4, marginBottom: '1.5rem' }}>
                     {questions[currentQuestionIdx].question_text}
                   </h4>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '2rem' }}>
                     {questions[currentQuestionIdx].options.map((option, idx) => {
                       const isSelected = selectedAnswers[currentQuestionIdx] === idx;
                       return (
@@ -359,33 +367,33 @@ export default function LecturePlayerClient({
                           key={idx}
                           onClick={() => handleSelectAnswer(idx)}
                           style={{
-                            padding: '0.85rem 1rem',
+                            padding: '1rem',
                             borderRadius: 'var(--radius-md)',
-                            border: '1px solid',
-                            borderColor: isSelected ? 'var(--color-primary)' : 'var(--border-light)',
-                            background: isSelected ? 'rgba(250, 204, 21, 0.08)' : 'rgba(255,255,255,0.01)',
-                            color: isSelected ? 'var(--color-primary)' : 'var(--color-text-primary)',
+                            border: '2px solid var(--color-black)',
+                            background: isSelected ? 'var(--color-yellow)' : '#ffffff',
+                            color: 'var(--color-black)',
                             textAlign: 'left',
                             cursor: 'pointer',
                             fontSize: '0.875rem',
-                            fontWeight: isSelected ? 600 : 400,
+                            fontWeight: isSelected ? 800 : 500,
+                            boxShadow: isSelected ? '2px 2px 0 var(--color-black)' : 'none',
                             transition: 'var(--transition-fast)',
                             display: 'flex',
-                            gap: '0.75rem',
+                            gap: '0.85rem',
                             alignItems: 'center'
                           }}
                         >
                           <div style={{
-                            width: '20px',
-                            height: '20px',
+                            width: '22px',
+                            height: '22px',
                             borderRadius: '50%',
-                            border: '2px solid',
-                            borderColor: isSelected ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                            border: '2px solid var(--color-black)',
+                            background: isSelected ? '#ffffff' : 'var(--bg-base)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontSize: '0.75rem',
-                            fontWeight: 700,
+                            fontWeight: 800,
                             flexShrink: 0
                           }}>
                             {String.fromCharCode(65 + idx)}
@@ -402,7 +410,7 @@ export default function LecturePlayerClient({
                       className="btn btn-outline"
                       onClick={handlePrevQuestion}
                       disabled={currentQuestionIdx === 0}
-                      style={{ flex: 1, padding: '0.5rem', fontSize: '0.8rem' }}
+                      style={{ flex: 1, padding: '0.6rem', fontSize: '0.75rem' }}
                     >
                       Previous
                     </button>
@@ -412,7 +420,7 @@ export default function LecturePlayerClient({
                         className="btn btn-outline"
                         onClick={handleNextQuestion}
                         disabled={selectedAnswers[currentQuestionIdx] === undefined}
-                        style={{ flex: 1, padding: '0.5rem', fontSize: '0.8rem' }}
+                        style={{ flex: 1, padding: '0.6rem', fontSize: '0.75rem' }}
                       >
                         Next
                       </button>
@@ -421,41 +429,42 @@ export default function LecturePlayerClient({
                         className="btn btn-primary"
                         onClick={handleSubmitQuiz}
                         disabled={Object.keys(selectedAnswers).length < questions.length}
-                        style={{ flex: 1, padding: '0.5rem', fontSize: '0.8rem' }}
+                        style={{ flex: 1, padding: '0.6rem', fontSize: '0.75rem' }}
                       >
-                        Submit Test
+                        Submit
                       </button>
                     )}
                   </div>
                 </div>
               ) : !reviewMode ? (
                 /* Score Summary Screen */
-                <div style={{ textAlign: 'center', padding: '1.5rem 0' }}>
+                <div style={{ textAlign: 'center', padding: '2rem 0' }}>
                   <div style={{
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '70px',
-                    height: '70px',
+                    width: '80px',
+                    height: '80px',
                     borderRadius: '50%',
-                    background: 'rgba(16, 185, 129, 0.1)',
-                    border: '1px solid rgba(16, 185, 129, 0.2)',
-                    color: 'var(--color-success)',
-                    marginBottom: '1rem'
+                    background: 'var(--color-yellow)',
+                    border: '2px solid var(--color-black)',
+                    boxShadow: '4px 4px 0 var(--color-black)',
+                    color: 'var(--color-black)',
+                    marginBottom: '1.5rem'
                   }}>
                     <Award size={36} />
                   </div>
-                  <h4 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Test Completed</h4>
-                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
-                    You scored <strong style={{ color: 'var(--color-primary)' }}>{quizScore}</strong> out of <strong>{questions.length}</strong>.
+                  <h4 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '0.5rem' }}>Test Completed</h4>
+                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 550, marginBottom: '2rem' }}>
+                    You scored <strong style={{ color: 'var(--color-orange)', fontSize: '1.1rem' }}>{quizScore}</strong> out of <strong>{questions.length}</strong> correct.
                   </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    <button onClick={() => setReviewMode(true)} className="btn btn-secondary" style={{ width: '100%', padding: '0.5rem', fontSize: '0.85rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                    <button onClick={() => setReviewMode(true)} className="btn btn-secondary" style={{ width: '100%', padding: '0.6rem', fontSize: '0.8rem' }}>
                       Review Answers
                     </button>
-                    <button onClick={handleRetryQuiz} className="btn btn-outline" style={{ width: '100%', padding: '0.5rem', fontSize: '0.85rem' }}>
-                      <RefreshCw size={14} />
+                    <button onClick={handleRetryQuiz} className="btn btn-outline" style={{ width: '100%', padding: '0.6rem', fontSize: '0.8rem' }}>
+                      <RefreshCw size={12} />
                       Retry Test
                     </button>
                   </div>
@@ -463,9 +472,9 @@ export default function LecturePlayerClient({
               ) : (
                 /* Review Answers Screen */
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                    <h4 style={{ fontSize: '0.95rem', fontWeight: 700 }}>Answer Key Review</h4>
-                    <button onClick={() => setReviewMode(false)} className="btn btn-outline" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                    <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--color-black)' }}>Answer Key</h4>
+                    <button onClick={() => setReviewMode(false)} className="btn btn-outline" style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}>
                       Back to Score
                     </button>
                   </div>
@@ -476,8 +485,8 @@ export default function LecturePlayerClient({
                       const isCorrect = userAns === q.correct_answer;
                       
                       return (
-                        <div key={q.id} style={{ borderBottom: '1px solid var(--border-light)', paddingBottom: '1.25rem' }}>
-                          <h5 style={{ fontSize: '0.875rem', fontWeight: 600, lineHeight: 1.4, marginBottom: '0.75rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                        <div key={q.id} style={{ borderBottom: '2px solid var(--border-light)', paddingBottom: '1.5rem' }}>
+                          <h5 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--color-black)', lineHeight: 1.4, marginBottom: '0.85rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
                             <span style={{ color: 'var(--color-text-muted)' }}>{qIdx + 1}.</span>
                             <span>{q.question_text}</span>
                           </h5>
@@ -487,32 +496,33 @@ export default function LecturePlayerClient({
                               const isCorrectOpt = oIdx === q.correct_answer;
                               const isUserOpt = oIdx === userAns;
                               
-                              let border = '1px solid var(--border-light)';
-                              let bg = 'rgba(255,255,255,0.01)';
-                              let color = 'var(--color-text-primary)';
+                              let border = '2px solid var(--color-black)';
+                              let bg = '#ffffff';
+                              let color = 'var(--color-black)';
                               let icon = null;
 
                               if (isCorrectOpt) {
-                                border = '1px solid var(--color-success)';
+                                border = '2px solid var(--color-success)';
                                 bg = 'rgba(16, 185, 129, 0.08)';
                                 color = 'var(--color-success)';
-                                icon = <Check size={12} style={{ marginLeft: 'auto' }} />;
+                                icon = <Check size={12} style={{ marginLeft: 'auto', strokeWidth: 3 }} />;
                               } else if (isUserOpt && !isCorrect) {
-                                border = '1px solid var(--color-danger)';
+                                border = '2px solid var(--color-danger)';
                                 bg = 'rgba(239, 68, 68, 0.08)';
                                 color = 'var(--color-danger)';
-                                icon = <X size={12} style={{ marginLeft: 'auto' }} />;
+                                icon = <X size={12} style={{ marginLeft: 'auto', strokeWidth: 3 }} />;
                               }
 
                               return (
                                 <div
                                   key={oIdx}
                                   style={{
-                                    padding: '0.6rem 0.85rem',
+                                    padding: '0.7rem 0.85rem',
                                     borderRadius: 'var(--radius-sm)',
                                     border,
                                     background: bg,
                                     color,
+                                    fontWeight: (isCorrectOpt || isUserOpt) ? 700 : 500,
                                     fontSize: '0.8rem',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -520,16 +530,17 @@ export default function LecturePlayerClient({
                                   }}
                                 >
                                   <div style={{
-                                    width: '16px',
-                                    height: '16px',
+                                    width: '18px',
+                                    height: '18px',
                                     borderRadius: '50%',
-                                    border: '1px solid',
+                                    border: '2px solid',
                                     borderColor: isCorrectOpt ? 'var(--color-success)' : isUserOpt ? 'var(--color-danger)' : 'var(--color-text-muted)',
+                                    background: '#ffffff',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     fontSize: '0.7rem',
-                                    fontWeight: 700,
+                                    fontWeight: 800,
                                     flexShrink: 0
                                   }}>
                                     {String.fromCharCode(65 + oIdx)}

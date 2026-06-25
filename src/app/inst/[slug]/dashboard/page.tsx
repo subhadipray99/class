@@ -77,7 +77,6 @@ export default function Dashboard({ params }: PageProps) {
   // 2. Fetch courses for the institute
   const fetchCourses = async (instituteId: string) => {
     try {
-      // Connect to Supabase using public client
       const db = getSupabaseClient();
       const { data, error } = await db
         .from('courses')
@@ -103,9 +102,9 @@ export default function Dashboard({ params }: PageProps) {
 
   if (!isLoaded || syncing || loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
-        <Loader2 size={40} className="text-gradient-purple" style={{ animation: 'spin 1s linear infinite' }} />
-        <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', background: 'var(--bg-base)' }}>
+        <Loader2 size={40} style={{ color: 'var(--color-orange)', animation: 'spin 1s linear infinite' }} />
+        <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 600 }}>
           {syncing ? 'Synchronizing workspace...' : 'Loading courses...'}
         </p>
         <style jsx global>{`
@@ -119,11 +118,11 @@ export default function Dashboard({ params }: PageProps) {
 
   if (error) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-        <div className="glass" style={{ padding: '2.5rem', borderRadius: 'var(--radius-lg)', textAlign: 'center', maxWidth: '450px' }}>
-          <ShieldAlert size={48} style={{ color: 'var(--color-danger)', marginBottom: '1rem', display: 'inline-block' }} />
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Failed to Authenticate</h2>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>{error}</p>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', background: 'var(--bg-base)' }}>
+        <div className="glass" style={{ padding: '2.5rem', borderRadius: 'var(--radius-lg)', border: '2px solid var(--color-black)', boxShadow: '0 8px 0 var(--color-black)', textAlign: 'center', maxWidth: '450px', background: '#ffffff' }}>
+          <ShieldAlert size={48} style={{ color: 'var(--color-danger)', marginBottom: '1.25rem', display: 'inline-block' }} />
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '0.5rem' }}>Failed to Authenticate</h2>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 550, marginBottom: '1.75rem' }}>{error}</p>
           <Link href={`/inst/${slug}`} className="btn btn-primary">
             Return to Homepage
           </Link>
@@ -135,49 +134,51 @@ export default function Dashboard({ params }: PageProps) {
   const isAdminOrTeacher = profile?.role === 'admin' || profile?.role === 'teacher';
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-base)' }}>
       {/* Navigation Header */}
       <header className="glass" style={{
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        padding: '1rem 2rem',
+        padding: '1.25rem 2rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderBottom: '1px solid var(--border-light)'
+        borderBottom: '2px solid var(--color-black)',
+        background: 'var(--bg-surface)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <span style={{
-            fontSize: '1.25rem',
+            fontSize: '1.35rem',
             fontWeight: 800,
+            color: 'var(--color-black)',
             fontFamily: 'var(--font-family-heading)',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.5rem'
+            gap: '0.6rem'
           }}>
-            <GraduationCap style={{ color: 'var(--color-primary)' }} />
+            <GraduationCap style={{ color: 'var(--color-orange)' }} />
             Study Portal
           </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
           {isAdminOrTeacher && (
-            <Link href={`/inst/${slug}/admin`} className="btn btn-secondary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.875rem' }}>
-              <Layout size={16} />
+            <Link href={`/inst/${slug}/admin`} className="btn btn-secondary" style={{ padding: '0.55rem 1.25rem', fontSize: '0.85rem' }}>
+              <Layout size={15} />
               Admin Panel
             </Link>
           )}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingRight: '0.5rem' }}>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{profile?.name}</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', textTransform: 'capitalize' }}>{profile?.role}</div>
+              <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--color-black)' }}>{profile?.name}</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{profile?.role}</div>
             </div>
           </div>
 
           <SignOutButton redirectUrl={`/inst/${slug}`}>
-            <button className="btn btn-outline" style={{ padding: '0.5rem', borderRadius: 'var(--radius-md)' }}>
+            <button className="btn btn-outline" style={{ padding: '0.55rem', borderRadius: 'var(--radius-md)' }}>
               <LogOut size={16} />
             </button>
           </SignOutButton>
@@ -185,50 +186,54 @@ export default function Dashboard({ params }: PageProps) {
       </header>
 
       {/* Main Container */}
-      <main style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '2.5rem 2rem', flex: 1 }}>
+      <main style={{ maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '3rem 2rem', flex: 1 }}>
         
         {/* Welcome Section */}
         <section className="glass" style={{
           padding: '2.5rem',
           borderRadius: 'var(--radius-lg)',
-          marginBottom: '2.5rem',
-          backgroundImage: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, transparent 100%)',
-          border: '1px solid rgba(139, 92, 246, 0.15)',
+          border: '2px solid var(--color-black)',
+          boxShadow: '0 8px 0 var(--color-black)',
+          marginBottom: '3rem',
+          backgroundImage: 'linear-gradient(135deg, rgba(255, 107, 0, 0.05) 0%, transparent 100%)',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          background: '#ffffff'
         }}>
-          <div style={{ position: 'absolute', right: '-20px', bottom: '-20px', opacity: 0.1 }}>
-            <BookOpen size={200} style={{ color: 'var(--color-primary)' }} />
+          <div style={{ position: 'absolute', right: '-20px', bottom: '-20px', opacity: 0.06 }}>
+            <BookOpen size={200} style={{ color: 'var(--color-orange)' }} />
           </div>
 
-          <span className="badge badge-gold" style={{ marginBottom: '0.75rem' }}>Ready to Learn</span>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem', fontFamily: 'var(--font-family-heading)' }}>
-            Welcome back, <span className="text-gradient-purple">{profile?.name}</span>!
+          <span className="badge badge-yellow" style={{ marginBottom: '1rem', border: '2px solid var(--color-black)' }}>
+            Ready to Learn
+          </span>
+          <h2 style={{ fontSize: '2.25rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '0.75rem', fontFamily: 'var(--font-family-heading)' }}>
+            Welcome back, <span className="text-gradient-orange">{profile?.name}</span>!
           </h2>
-          <p style={{ color: 'var(--color-text-secondary)', maxWidth: '600px', fontSize: '0.95rem', lineHeight: 1.5 }}>
+          <p style={{ color: 'var(--color-text-secondary)', maxWidth: '620px', fontSize: '0.95rem', fontWeight: 550, lineHeight: 1.6 }}>
             Pick up right where you left off. Access your recorded classes, lecture notes, downloadable resources, and take active test series quizzes.
           </p>
         </section>
 
         {/* Search & Filter Header */}
-        <section style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1.5rem', marginBottom: '2rem' }}>
+        <section style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1.5rem', marginBottom: '2.5rem' }}>
           <div>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Your Enrolled Classes</h3>
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>Select a class to resume study</p>
+            <h3 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--color-black)' }}>Your Enrolled Classes</h3>
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', fontWeight: 600 }}>Select a class to resume study</p>
           </div>
 
-          <div style={{ position: 'relative', width: '100%', maxWidth: '360px' }}>
+          <div style={{ position: 'relative', width: '100%', maxWidth: '380px' }}>
             <input
               type="text"
               placeholder="Search classes..."
               className="form-input"
-              style={{ paddingLeft: '2.5rem' }}
+              style={{ paddingLeft: '2.75rem' }}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <Search size={18} style={{
               position: 'absolute',
-              left: '0.875rem',
+              left: '1rem',
               top: '50%',
               transform: 'translateY(-50%)',
               color: 'var(--color-text-muted)'
@@ -238,11 +243,11 @@ export default function Dashboard({ params }: PageProps) {
 
         {/* Courses List */}
         {filteredCourses.length === 0 ? (
-          <div className="glass" style={{ textAlign: 'center', padding: '5rem 2rem', borderRadius: 'var(--radius-lg)' }}>
-            <BookOpen size={48} style={{ color: 'var(--color-text-muted)', marginBottom: '1rem', display: 'inline-block' }} />
-            <h4 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.5rem' }}>No Courses Found</h4>
-            <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>
-              {searchQuery ? 'Try adjusting your search criteria.' : 'Your institute has not added any courses yet.'}
+          <div className="glass" style={{ textAlign: 'center', padding: '5rem 2rem', borderRadius: 'var(--radius-lg)', border: '2px solid var(--color-black)', background: '#ffffff' }}>
+            <BookOpen size={48} style={{ color: 'var(--color-text-muted)', marginBottom: '1.25rem', display: 'inline-block' }} />
+            <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '0.5rem' }}>No Courses Found</h4>
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 500 }}>
+              {searchQuery ? 'Try adjusting your search criteria.' : 'Your academy has not added any courses yet.'}
             </p>
           </div>
         ) : (
@@ -252,31 +257,34 @@ export default function Dashboard({ params }: PageProps) {
                 borderRadius: 'var(--radius-lg)',
                 overflow: 'hidden',
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                border: '2px solid var(--color-black)',
+                background: '#ffffff'
               }}>
                 <div style={{
-                  height: '160px',
+                  height: '170px',
                   background: course.thumbnail_url 
                     ? `url(${course.thumbnail_url}) center/cover no-repeat` 
-                    : 'linear-gradient(135deg, #1e1b4b 0%, #311042 100%)',
-                  position: 'relative'
+                    : 'linear-gradient(135deg, #ffd6b3 0%, #ffebcc 100%)',
+                  position: 'relative',
+                  borderBottom: '2px solid var(--color-black)'
                 }}>
                   <div style={{ position: 'absolute', bottom: '0.75rem', left: '0.75rem', display: 'flex', gap: '0.5rem' }}>
-                    <span className="badge badge-purple" style={{ textTransform: 'none', background: 'rgba(0,0,0,0.6)' }}>
-                      Active course
+                    <span className="badge badge-outline" style={{ textTransform: 'none', background: '#ffffff', border: '2px solid var(--color-black)' }}>
+                      Active
                     </span>
                   </div>
                 </div>
 
-                <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ padding: '1.75rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
-                    <h4 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.5rem' }}>{course.title}</h4>
-                    <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem', lineHeight: 1.4, marginBottom: '1.5rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-black)', marginBottom: '0.6rem' }}>{course.title}</h4>
+                    <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', fontWeight: 500, lineHeight: 1.5, marginBottom: '1.75rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                       {course.description || 'Access comprehensive video lectures, resources, notes, and quiz sets for full preparation.'}
                     </p>
                   </div>
 
-                  <Link href={`/inst/${slug}/courses/${course.id}`} className="btn btn-primary" style={{ width: '100%', padding: '0.6rem', fontSize: '0.875rem' }}>
+                  <Link href={`/inst/${slug}/courses/${course.id}`} className="btn btn-primary" style={{ width: '100%', padding: '0.65rem', fontSize: '0.85rem' }}>
                     Access Classes
                     <ArrowRight size={14} />
                   </Link>

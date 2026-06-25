@@ -10,7 +10,7 @@ export default function Home() {
   // Registration state
   const [instName, setInstName] = useState('');
   const [instSlug, setInstSlug] = useState('');
-  const [instColor, setInstColor] = useState('#8b5cf6');
+  const [instColor, setInstColor] = useState('#ff6b00');
   const [registering, setRegistering] = useState(false);
   const [regSuccess, setRegSuccess] = useState(false);
   const [regError, setRegError] = useState('');
@@ -67,112 +67,121 @@ export default function Home() {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '2rem 1.5rem',
+      padding: '3rem 1.5rem',
       position: 'relative'
     }}>
       {/* Decorative Glows */}
       <div style={{
         position: 'absolute',
-        top: '20%',
+        top: '15%',
         left: '50%',
         transform: 'translateX(-50%)',
-        width: '500px',
-        height: '500px',
-        background: 'radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%)',
+        width: '600px',
+        height: '600px',
+        background: 'radial-gradient(circle, rgba(255, 107, 0, 0.05) 0%, transparent 70%)',
         zIndex: -1,
         pointerEvents: 'none'
       }} />
 
-      <header style={{ textAlign: 'center', marginBottom: '3rem' }}>
+      <header style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
         <div style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: '0.75rem',
+          gap: '0.6rem',
           padding: '0.5rem 1.25rem',
-          borderRadius: 'var(--radius-full)',
-          background: 'rgba(139, 92, 246, 0.1)',
-          border: '1px solid rgba(139, 92, 246, 0.2)',
-          color: '#c084fc',
-          fontSize: '0.875rem',
-          fontWeight: 600,
+          borderRadius: 'var(--radius-sm)',
+          background: 'rgba(255, 107, 0, 0.08)',
+          border: '2px solid var(--color-black)',
+          color: 'var(--color-orange)',
+          fontSize: '0.85rem',
+          fontWeight: 800,
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
           marginBottom: '1.5rem'
         }}>
-          <Sparkles size={16} />
-          Create Your PhysicsWallah Style App
+          <Sparkles size={14} />
+          High-Fidelity LMS Creator
         </div>
         <h1 style={{
-          fontSize: '3.5rem',
+          fontSize: '3.75rem',
           fontWeight: 800,
-          lineHeight: 1.1,
+          lineHeight: 1.05,
           marginBottom: '1rem',
-          fontFamily: 'var(--font-family-heading)'
+          fontFamily: 'var(--font-family-heading)',
+          color: 'var(--color-black)'
         }}>
-          Launch Your <span className="text-gradient-purple">Online Academy</span>
+          Launch Your <span className="text-gradient-orange">Online Academy</span>
         </h1>
         <p style={{
           color: 'var(--color-text-secondary)',
-          maxWidth: '540px',
+          maxWidth: '560px',
           margin: '0 auto',
           fontSize: '1.125rem',
+          fontWeight: 500,
           lineHeight: 1.5
         }}>
-          Give your educational institute its own custom portal with course managers, quizzes, student analytics, and a premium learning interface.
+          Deploy your educational institute portal with responsive class planners, smart MCQs, resources, and student managers.
         </p>
       </header>
 
       <main style={{
         width: '100%',
-        maxWidth: '850px',
+        maxWidth: '900px',
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
-        gap: '2rem',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+        gap: '2.5rem',
         zIndex: 1
       }}>
         {/* Register Box */}
         <section className="glass" style={{
           padding: '2.5rem',
           borderRadius: 'var(--radius-lg)',
+          border: '2px solid var(--color-black)',
+          boxShadow: '0 8px 0 var(--color-black)',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          background: '#ffffff'
         }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
               <div style={{
-                background: 'rgba(250, 204, 21, 0.15)',
-                color: 'var(--color-primary)',
+                background: 'var(--color-yellow)',
+                color: 'var(--color-black)',
                 padding: '0.75rem',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid rgba(250, 204, 21, 0.2)'
+                borderRadius: 'var(--radius-sm)',
+                border: '2px solid var(--color-black)',
+                boxShadow: '2px 2px 0 var(--color-black)'
               }}>
-                <PlusCircle size={24} />
+                <PlusCircle size={22} />
               </div>
               <div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Register Institute</h2>
-                <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>Create a separate workspace tenant</p>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-black)' }}>Register Academy</h2>
+                <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>Create an isolated student portal</p>
               </div>
             </div>
 
             {regSuccess ? (
               <div style={{
-                background: 'rgba(16, 185, 129, 0.1)',
-                border: '1px solid rgba(16, 185, 129, 0.2)',
+                background: 'rgba(16, 185, 129, 0.08)',
+                border: '2px solid var(--color-black)',
                 borderRadius: 'var(--radius-md)',
-                padding: '1.5rem',
+                padding: '2rem',
                 textAlign: 'center',
                 color: 'var(--color-success)',
-                margin: '2rem 0'
+                margin: '2rem 0',
+                boxShadow: '4px 4px 0 var(--color-black)'
               }}>
-                <div style={{ display: 'inline-flex', padding: '0.5rem', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.2)', marginBottom: '1rem' }}>
-                  <Check size={32} />
+                <div style={{ display: 'inline-flex', padding: '0.5rem', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.15)', border: '2px solid var(--color-black)', marginBottom: '1.25rem' }}>
+                  <Check size={28} style={{ color: 'var(--color-black)' }} />
                 </div>
-                <h3 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Institute Registered!</h3>
-                <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>Redirecting to your new domain space...</p>
+                <h3 style={{ fontWeight: 800, color: 'var(--color-black)', marginBottom: '0.5rem' }}>Academy Registered!</h3>
+                <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', fontWeight: 500 }}>Redirecting to your sub-domain URL...</p>
               </div>
             ) : (
               <form onSubmit={handleRegister}>
                 <div className="form-group">
-                  <label className="form-label">Institute Name</label>
+                  <label className="form-label">Academy Name</label>
                   <input
                     type="text"
                     required
@@ -187,9 +196,9 @@ export default function Home() {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">URL Slug</label>
+                  <label className="form-label">URL Space</label>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>/inst/</span>
+                    <span style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', fontWeight: 700 }}>/inst/</span>
                     <input
                       type="text"
                       required
@@ -206,22 +215,22 @@ export default function Home() {
                     <input
                       type="color"
                       className="form-input"
-                      style={{ width: '60px', padding: '2px', height: '40px', cursor: 'pointer' }}
+                      style={{ width: '70px', padding: '3px', height: '42px', cursor: 'pointer' }}
                       value={instColor}
                       onChange={(e) => setInstColor(e.target.value)}
                     />
-                    <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>Choose your brand identity</span>
+                    <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', fontWeight: 600 }}>Choose your academy brand identity</span>
                   </div>
                 </div>
 
                 {regError && (
-                  <p style={{ color: 'var(--color-danger)', fontSize: '0.875rem', marginBottom: '1rem' }}>
+                  <p style={{ color: 'var(--color-danger)', fontSize: '0.85rem', fontWeight: 700, marginBottom: '1.25rem' }}>
                     {regError}
                   </p>
                 )}
 
                 <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={registering}>
-                  {registering ? 'Creating...' : 'Launch Institute'}
+                  {registering ? 'Creating...' : 'Launch Academy'}
                   <ArrowRight size={18} />
                 </button>
               </form>
@@ -233,43 +242,47 @@ export default function Home() {
         <section className="glass" style={{
           padding: '2.5rem',
           borderRadius: 'var(--radius-lg)',
+          border: '2px solid var(--color-black)',
+          boxShadow: '0 8px 0 var(--color-black)',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          background: '#ffffff'
         }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
               <div style={{
-                background: 'rgba(139, 92, 246, 0.15)',
-                color: 'var(--color-secondary)',
+                background: 'var(--color-blue)',
+                color: '#ffffff',
                 padding: '0.75rem',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid rgba(139, 92, 246, 0.2)'
+                borderRadius: 'var(--radius-sm)',
+                border: '2px solid var(--color-black)',
+                boxShadow: '2px 2px 0 var(--color-black)'
               }}>
-                <School size={24} />
+                <School size={22} />
               </div>
               <div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Access Institute</h2>
-                <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>Enter an existing institute portal</p>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-black)' }}>Access Academy</h2>
+                <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>Enter your active educational portal</p>
               </div>
             </div>
 
             <form onSubmit={handleGoToInstitute}>
-              <div className="form-group" style={{ marginBottom: '2rem' }}>
-                <label className="form-label">Institute Slug</label>
+              <div className="form-group" style={{ marginBottom: '2.5rem' }}>
+                <label className="form-label">Academy URL Slug</label>
                 <div style={{ position: 'relative' }}>
                   <input
                     type="text"
                     required
                     placeholder="e.g. physics-champions"
                     className="form-input"
-                    style={{ paddingLeft: '2.5rem' }}
+                    style={{ paddingLeft: '2.75rem' }}
                     value={searchSlug}
                     onChange={(e) => setSearchSlug(e.target.value)}
                   />
                   <Search size={18} style={{
                     position: 'absolute',
-                    left: '0.875rem',
+                    left: '1rem',
                     top: '50%',
                     transform: 'translateY(-50%)',
                     color: 'var(--color-text-muted)'
@@ -278,7 +291,7 @@ export default function Home() {
               </div>
 
               <button type="submit" className="btn btn-outline" style={{ width: '100%' }} disabled={searching}>
-                {searching ? 'Navigating...' : 'Enter Institute'}
+                {searching ? 'Navigating...' : 'Enter Academy'}
                 <ArrowRight size={18} />
               </button>
             </form>
@@ -286,14 +299,15 @@ export default function Home() {
 
           <div style={{
             marginTop: '2rem',
-            padding: '1rem',
+            padding: '1.25rem',
             borderRadius: 'var(--radius-md)',
-            background: 'rgba(255,255,255,0.02)',
-            border: '1px solid var(--border-light)',
-            fontSize: '0.875rem',
+            background: 'var(--bg-base)',
+            border: '2px solid var(--color-black)',
+            fontSize: '0.85rem',
+            fontWeight: 600,
             color: 'var(--color-text-secondary)'
           }}>
-            <strong>Tip:</strong> Join as a student, teacher, or admin. Each institute operates on isolated student profiles, classes, and course materials.
+            <strong>Notice:</strong> Students signup inside their corresponding institute URL. Records and courses are secure and isolated per tenant.
           </div>
         </section>
       </main>
