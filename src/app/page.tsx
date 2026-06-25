@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { School, ArrowRight, Sparkles, Search, PlusCircle, Check } from 'lucide-react';
+import { useUser, SignInButton } from '@clerk/nextjs';
+import { School, ArrowRight, Sparkles, Search, PlusCircle, Check, LogIn, Loader2 } from 'lucide-react';
 
 export default function Home() {
   const router = useRouter();
+  const { user, isLoaded } = useUser();
   
   // Registration state
   const [instName, setInstName] = useState('');
@@ -21,7 +23,7 @@ export default function Home() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!instName || !instSlug) return;
+    if (!instName || !instSlug || !user) return;
     
     setRegistering(true);
     setRegError('');
@@ -161,7 +163,24 @@ export default function Home() {
               </div>
             </div>
 
-            {regSuccess ? (
+            {!isLoaded ? (
+              <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem 0' }}>
+                <Loader2 size={24} style={{ color: 'var(--color-orange)', animation: 'spin 1s linear infinite' }} />
+              </div>
+            ) : !user ? (
+              /* User Not Logged In Screen */
+              <div style={{ textAlign: 'center', padding: '2rem 0' }}>
+                <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', fontWeight: 600, lineHeight: 1.5, marginBottom: '2rem' }}>
+                  You must be logged in to register a new educational institute. Please sign in or create an account.
+                </p>
+                <SignInButton mode="modal">
+                  <button className="btn btn-primary" style={{ width: '100%' }}>
+                    <LogIn size={16} />
+                    Sign In to Register
+                  </button>
+                </SignInButton>
+              </div>
+            ) : regSuccess ? (
               <div style={{
                 background: 'rgba(16, 185, 129, 0.08)',
                 border: '2px solid var(--color-black)',
@@ -179,6 +198,7 @@ export default function Home() {
                 <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', fontWeight: 500 }}>Redirecting to your sub-domain URL...</p>
               </div>
             ) : (
+              /* Register Form (Visible only when logged in) */
               <form onSubmit={handleRegister}>
                 <div className="form-group">
                   <label className="form-label">Academy Name</label>
@@ -190,7 +210,6 @@ export default function Home() {
                     value={instName}
                     onChange={(e) => {
                       setInstName(e.target.value);
-                      // Auto-fill slug
                       setInstSlug(e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''));
                     }}
                   />
@@ -311,6 +330,11 @@ export default function Home() {
           </div>
         </section>
       </main>
+      <style jsx global>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
