@@ -38,17 +38,24 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 -- Enable RLS on Profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
+-- RLS Helper Functions (SECURITY DEFINER bypasses RLS, avoiding infinite recursion loops)
+CREATE OR REPLACE FUNCTION public.get_user_institute()
+RETURNS UUID AS $$
+  SELECT institute_id FROM public.profiles WHERE id = auth.uid()::text;
+$$ LANGUAGE sql SECURITY DEFINER SET search_path = public;
+
+CREATE OR REPLACE FUNCTION public.get_user_role()
+RETURNS TEXT AS $$
+  SELECT role FROM public.profiles WHERE id = auth.uid()::text;
+$$ LANGUAGE sql SECURITY DEFINER SET search_path = public;
+
+
 -- Profiles Policies
 CREATE POLICY "Allow users to read profiles in the same institute" ON public.profiles
   FOR SELECT USING (
-    -- User can read if they belong to the same institute
-    EXISTS (
-      SELECT 1 FROM public.profiles p 
-      WHERE p.id = auth.uid()::text AND p.institute_id = public.profiles.institute_id
-    )
-    OR
-    -- Allow user to read their own profile during signup/first-time check
-    id = auth.uid()::text
+    id = auth.uid()::text 
+    OR 
+    institute_id = public.get_user_institute()
   );
 
 CREATE POLICY "Allow users to insert/update their own profile" ON public.profiles
@@ -56,12 +63,9 @@ CREATE POLICY "Allow users to insert/update their own profile" ON public.profile
 
 CREATE POLICY "Allow admins/teachers to manage profiles in their institute" ON public.profiles
   FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles admin_p
-      WHERE admin_p.id = auth.uid()::text 
-      AND admin_p.institute_id = public.profiles.institute_id 
-      AND admin_p.role IN ('admin', 'teacher')
-    )
+    institute_id = public.get_user_institute() 
+    AND 
+    public.get_user_role() IN ('admin', 'teacher')
   );
 
 
@@ -82,21 +86,16 @@ ALTER TABLE public.courses ENABLE ROW LEVEL SECURITY;
 -- Courses Policies
 CREATE POLICY "Allow students/teachers to read published courses in their institute" ON public.courses
   FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid()::text AND p.institute_id = public.courses.institute_id
-    ) AND (is_published = true OR EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid()::text AND p.institute_id = public.courses.institute_id AND p.role IN ('admin', 'teacher')
-    ))
+    institute_id = public.get_user_institute() 
+    AND 
+    (is_published = true OR public.get_user_role() IN ('admin', 'teacher'))
   );
 
 CREATE POLICY "Allow admins/teachers to manage courses in their institute" ON public.courses
   FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid()::text AND p.institute_id = public.courses.institute_id AND p.role IN ('admin', 'teacher')
-    )
+    institute_id = public.get_user_institute() 
+    AND 
+    public.get_user_role() IN ('admin', 'teacher')
   );
 
 
@@ -119,8 +118,8 @@ CREATE POLICY "Allow access to lectures for enrolled students/teachers" ON publi
   FOR SELECT USING (
     EXISTS (
       SELECT 1 FROM public.courses c
-      JOIN public.profiles p ON p.institute_id = c.institute_id
-      WHERE c.id = public.lectures.course_id AND p.id = auth.uid()::text
+      WHERE c.id = public.lectures.course_id 
+      AND c.institute_id = public.get_user_institute()
     )
   );
 
@@ -128,9 +127,11 @@ CREATE POLICY "Allow admins/teachers to manage lectures" ON public.lectures
   FOR ALL USING (
     EXISTS (
       SELECT 1 FROM public.courses c
-      JOIN public.profiles p ON p.institute_id = c.institute_id
-      WHERE c.id = public.lectures.course_id AND p.id = auth.uid()::text AND p.role IN ('admin', 'teacher')
+      WHERE c.id = public.lectures.course_id 
+      AND c.institute_id = public.get_user_institute()
     )
+    AND 
+    public.get_user_role() IN ('admin', 'teacher')
   );
 
 
@@ -152,8 +153,8 @@ CREATE POLICY "Allow read access to resources for enrolled users" ON public.reso
     EXISTS (
       SELECT 1 FROM public.lectures l
       JOIN public.courses c ON c.id = l.course_id
-      JOIN public.profiles p ON p.institute_id = c.institute_id
-      WHERE l.id = public.resources.lecture_id AND p.id = auth.uid()::text
+      WHERE l.id = public.resources.lecture_id 
+      AND c.institute_id = public.get_user_institute()
     )
   );
 
@@ -162,9 +163,11 @@ CREATE POLICY "Allow admins/teachers to manage resources" ON public.resources
     EXISTS (
       SELECT 1 FROM public.lectures l
       JOIN public.courses c ON c.id = l.course_id
-      JOIN public.profiles p ON p.institute_id = c.institute_id
-      WHERE l.id = public.resources.lecture_id AND p.id = auth.uid()::text AND p.role IN ('admin', 'teacher')
+      WHERE l.id = public.resources.lecture_id 
+      AND c.institute_id = public.get_user_institute()
     )
+    AND 
+    public.get_user_role() IN ('admin', 'teacher')
   );
 
 
@@ -185,8 +188,8 @@ CREATE POLICY "Allow read access to quizzes for enrolled users" ON public.quizze
     EXISTS (
       SELECT 1 FROM public.lectures l
       JOIN public.courses c ON c.id = l.course_id
-      JOIN public.profiles p ON p.institute_id = c.institute_id
-      WHERE l.id = public.quizzes.lecture_id AND p.id = auth.uid()::text
+      WHERE l.id = public.quizzes.lecture_id 
+      AND c.institute_id = public.get_user_institute()
     )
   );
 
@@ -195,9 +198,11 @@ CREATE POLICY "Allow admins/teachers to manage quizzes" ON public.quizzes
     EXISTS (
       SELECT 1 FROM public.lectures l
       JOIN public.courses c ON c.id = l.course_id
-      JOIN public.profiles p ON p.institute_id = c.institute_id
-      WHERE l.id = public.quizzes.lecture_id AND p.id = auth.uid()::text AND p.role IN ('admin', 'teacher')
+      WHERE l.id = public.quizzes.lecture_id 
+      AND c.institute_id = public.get_user_institute()
     )
+    AND 
+    public.get_user_role() IN ('admin', 'teacher')
   );
 
 
@@ -221,8 +226,8 @@ CREATE POLICY "Allow read access to questions for enrolled users" ON public.quiz
       SELECT 1 FROM public.quizzes q
       JOIN public.lectures l ON l.id = q.lecture_id
       JOIN public.courses c ON c.id = l.course_id
-      JOIN public.profiles p ON p.institute_id = c.institute_id
-      WHERE q.id = public.quiz_questions.quiz_id AND p.id = auth.uid()::text
+      WHERE q.id = public.quiz_questions.quiz_id 
+      AND c.institute_id = public.get_user_institute()
     )
   );
 
@@ -232,9 +237,11 @@ CREATE POLICY "Allow admins/teachers to manage questions" ON public.quiz_questio
       SELECT 1 FROM public.quizzes q
       JOIN public.lectures l ON l.id = q.lecture_id
       JOIN public.courses c ON c.id = l.course_id
-      JOIN public.profiles p ON p.institute_id = c.institute_id
-      WHERE q.id = public.quiz_questions.quiz_id AND p.id = auth.uid()::text AND p.role IN ('admin', 'teacher')
+      WHERE q.id = public.quiz_questions.quiz_id 
+      AND c.institute_id = public.get_user_institute()
     )
+    AND 
+    public.get_user_role() IN ('admin', 'teacher')
   );
 
 
@@ -261,7 +268,9 @@ CREATE POLICY "Allow admins/teachers to read attempts in their institute" ON pub
       SELECT 1 FROM public.quizzes q
       JOIN public.lectures l ON l.id = q.lecture_id
       JOIN public.courses c ON c.id = l.course_id
-      JOIN public.profiles p ON p.institute_id = c.institute_id
-      WHERE q.id = public.quiz_attempts.quiz_id AND p.id = auth.uid()::text AND p.role IN ('admin', 'teacher')
+      WHERE q.id = public.quiz_attempts.quiz_id 
+      AND c.institute_id = public.get_user_institute()
     )
+    AND 
+    public.get_user_role() IN ('admin', 'teacher')
   );
